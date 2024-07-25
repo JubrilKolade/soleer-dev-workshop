@@ -73,19 +73,7 @@ const transfer = async () => {
     const balance = await connection.getBalance(from.publicKey); // Added await to correctly fetch balance
     console.log(balance);
 
-    
-
-    if (balance === 0) {
-        console.log('broke in sol');
-        (async () => {
-            const connection = new Connection(process.env.devnet_rpc, "confirmed");
-            const myPublicKey = from.publicKey; 
-            const lamports = LAMPORTS_PER_SOL * 0.2;
-            const signature = await connection.requestAirdrop(myPublicKey, lamports);
-            await connection.confirmTransaction(signature);
-        })();
-        
-    } else {
+    const sendSol = async () => {
         let transaction = new Transaction().add(
             SystemProgram.transfer({
                 fromPubkey: from.publicKey,
@@ -121,6 +109,20 @@ const transfer = async () => {
         );
 
         console.log('Transaction successful with signature:', send);
+    }
+
+    
+
+    if (balance === 0) {
+        console.log('broke in sol, you will be sent some airdrops');
+            const connection = new Connection(process.env.devnet_rpc, "confirmed");
+            const myPublicKey = from.publicKey; 
+            const lamports = LAMPORTS_PER_SOL * 0.2;
+            const signature = await connection.requestAirdrop(myPublicKey, lamports);
+            await connection.confirmTransaction(signature);
+
+    } else {
+       sendSol()
     }   
 };
 
